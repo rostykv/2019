@@ -3,7 +3,11 @@
         <title>Company list</title>
     </head>
     <body>
-        <p>Hi there!</p>
-        <p>It works!</p>
+        {% for company in company_list_qs %}
+
+        <p>{{company}}</p>
+
+        {% endfor %}
+
     </body>
 </html>
