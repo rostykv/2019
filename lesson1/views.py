@@ -5,4 +5,5 @@ from .models import Company
 
 def company_list(request):
     company_list_qs = Company.objects.all()
-    return render(request, 'lesson1/company_list.html', {'company_list_qs': company_list_qs})
+    context = {'company_list_qs': company_list_qs}
+    return render(request, 'lesson1/company_list.html', context)
