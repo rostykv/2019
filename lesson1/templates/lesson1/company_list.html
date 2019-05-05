@@ -7,10 +7,13 @@
     <body>
         {% for company in company_list_qs %}
 
-        <h1>{{company.company_name}}</h1>
-        <p>{{company.company_country}}</p1>
+          <p>{{company}}</p1>
 
         {% endfor %}
 
     </body>
 </html>
+
+
+<h1>{{company.company_name}}</h1>
+<p>{{company.company_country}}</p1>
