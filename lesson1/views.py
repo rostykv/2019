@@ -26,5 +26,5 @@ def company_list(request):
 
     company_list_qs = Company.objects.all()
     context = {'company_list_qs': company_list_qs}
-    context = {'company_list_qs': prime_numbers(100)}
+    context = {'primes': prime_numbers(100)}
     return render(request, 'lesson1/company_list.html', context)
