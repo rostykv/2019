@@ -14,4 +14,4 @@ class Company(models.Model):
         return self.company_name
 
 class PrimeNumber(models.Model):
-    value  = models.BigIntegerField()
+    value  = models.IntegerField()
