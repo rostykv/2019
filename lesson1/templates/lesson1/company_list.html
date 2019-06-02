@@ -14,12 +14,14 @@
         {% for factor, power in primes %}
 
           {% if forloop.first %} {{argument}} = {%endif%}
+
           {{factor}}<sup>{{power}}</sup>
+
           {% if not forloop.last %} x {%endif%}
 
         {% endfor %}
 
-        {%if newly_found_primes%}
+        {%if newly_found_primes %}
         The following new prime numbers have been identified while factorizing your task:
 
         {%for new_prime in newly_found_primes%}

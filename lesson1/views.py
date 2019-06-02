@@ -40,10 +40,7 @@ def factorize(x):
 
     local_x = x
     local_known_primes = known_primes_list()
-    newly_found_primes = []
-
-    pdb.set_trace()
-
+    
     for source in (local_known_primes, eratosthenes(local_known_primes)  ):
 
         for factor in source:
