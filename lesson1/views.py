@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse
-from .models import Company, Primes
+from .models import Company, PrimeNumber
 import pdb;
 
 
@@ -7,12 +7,12 @@ newly_found_primes = []
 
 def known_primes_list():
     l = []
-    for p in Primes.objects.all():
+    for p in PrimeNumber.objects.all():
         l.append(p.value)
     return l
 
 def add_prime_to_db(p):
-    new_prime = Primes(value = p)
+    new_prime = PrimeNumber(value = p)
     new_prime.save()
     newly_found_primes.append(p)
 
@@ -40,7 +40,7 @@ def factorize(x):
 
     local_x = x
     local_known_primes = known_primes_list()
-    
+
     for source in (local_known_primes, eratosthenes(local_known_primes)  ):
 
         for factor in source:
