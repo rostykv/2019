@@ -8,7 +8,6 @@ from itertools import chain
 
 def company_list(request):
     context = {}
-    import pdb; pdb.set_trace()
     try:
         argument = int(request.GET['argument'])
         context['argument'] = argument
