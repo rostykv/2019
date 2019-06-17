@@ -5,31 +5,37 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     </head>
     <body>
+
+        {{message1}}
+        <p></p>
+
       <form>
         <input type="number" name="argument">
         <input type="submit">
       </form>
 
 
-        {% for factor, power in primes %}
+      {%for factor, power in factorization%}
+        {%if forloop.first%}
+          {{argument}}=
+        {%endif%}
+        {{factor}}<sup>{{power}}</sup>
+        {%if not forloop.last%}
+          x
+        {%endif%}
+      {%endfor%}
 
-          {% if forloop.first %} {{argument}} = {%endif%}
-
-          {{factor}}<sup>{{power}}</sup>
-
-          {% if not forloop.last %} x {%endif%}
-
-        {% endfor %}
-
-        {%if newly_found_primes %}
-        The following new prime numbers have been identified while factorizing your task:
-
+      {%if newly_found_primes %}
+        <p>The following new prime numbers have been identified while factorizing your task:</p>
         {%for new_prime in newly_found_primes%}
-
-        <p>{{new_prime}}</p>
-
+          {{new_prime}}
+          {%if not forloop.last%}
+          ,
+          {%endif%}
         {%endfor%}
-        {% endif %}
+      {% else %}
+        <p>No new prime numbers were identified while factorizing your task:</p>
+      {% endif %}
 
     </body>
 </html>
