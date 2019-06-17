@@ -16,6 +16,7 @@ def known_primes():
 
 def db_content_message():
     try:
+        import pdb; pdb.set_trace()
         return messages[1] + str(PrimeNumber.objects.last().value)
     except:
         return messages[2]
