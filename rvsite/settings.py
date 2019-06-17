@@ -26,7 +26,7 @@ SECRET_KEY = 'b)v%1z(^eae_#$r#@(3!)ofr!)@0lcm8sdbdo%k3@f%ye)5&rb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['rostykv.pythonanywhere.com']
 
 
 # Application definition
