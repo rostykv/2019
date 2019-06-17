@@ -1,4 +1,4 @@
-from .models import Company, PrimeNumber
+from .models import Company, PrimeNumber, UnorderedPrimeNumber
 import pdb
 
 messages = {
@@ -8,6 +8,9 @@ messages = {
 
 newly_found_primes = []
 
+def unordered_primes():
+    for p in UnorderedPrimeNumber.objects.all(): yield p.value
+
 def new_primes():
     for p in newly_found_primes: yield p
 
@@ -16,14 +19,14 @@ def known_primes():
 
 def db_content_message():
     try:
-        import pdb; pdb.set_trace()
         return messages[1] + str(PrimeNumber.objects.last().value)
     except:
         return messages[2]
 
 def eratosthenes():
-
     sieve = [ [n] for n in known_primes()  ]
+    unordered = [ n for n in unordered_primes()]
+
     try: d = sieve[-1][0] # If the db of prime numbers is empty,
     except: d = 1           # the first prime number will be manually set to 2
 
@@ -32,18 +35,39 @@ def eratosthenes():
 
     while True:
         d += 1
+        try:
+            unordered.remove(d)
+            x = UnorderedPrimeNumber.objects.get(value = d)
+            x.delete()
+            sieve.append([d,d])
+            add_new_prime_to_db(d)
+            d += 1
+            step = 2
+        except:
+            step = 1
+
         prime = True
         for a in sieve:
-            a[1] -= 1
+            a[1] -= step
             if a[1] == 0:
                 a[1] = a[0]
                 prime = False
         if prime:
             sieve.append([d,d])
-            new_prime = PrimeNumber(value = d)
-            new_prime.save()
+            add_new_prime_to_db(d)
             newly_found_primes.append(d)
             yield d
+
+def add_new_prime_to_db(p):
+    new_prime = PrimeNumber(value = p)
+    new_prime.save()
+
+
+def add_new_unorderd_prime(p):
+    new_prime = UnorderedPrimeNumber(value = p)
+    new_prime.save()
+    newly_found_primes.append(p)
+
 
 def divide(divisible, divider):
     power = 0
@@ -54,7 +78,7 @@ def divide(divisible, divider):
     return  (power, remainder)
 
 
-def factorization(x, dividers):
+def factorization(x, dividers, ordered = True):
     #This generator divides x by each of dividers and
     #yields tuples of (factor, power, remainder)
     remainder = x
@@ -65,7 +89,8 @@ def factorization(x, dividers):
             yield (factor, power, remainder) #Yielding factor and power and remainder
             if remainder == 1: return #This means that we have successfully factorized the input
 
-        if factor ** 2 > remainder:
+        if ordered and (factor ** 2 > remainder):
+            add_new_unorderd_prime(remainder)
             yield (remainder, 1, 1) #This means that the current remainder is the last prime factor in factorization
             return
     yield (0, 0, remainder) #This means that we have tried all the factors in dividers, but non-prime remainder still remains
@@ -80,6 +105,11 @@ def full_factorization(x):
         if factor:
             yield (factor, power)
 
-    if remainder > 1: #After dividing x by all the known primes, the remainder is still >1
+    if remainder > 1: #After dividing x by all the ordered known primes, the remainder is still >1
+        for factor, power, remainder in factorization(remainder, unordered_primes(), ordered = False ):
+            if factor:
+                yield (factor, power)
+
+    if remainder > 1: #After dividing x by all the unordered known primes, the remainder is still >1
         for factor, power, remainder in factorization(remainder, eratosthenes()):
             yield (factor, power)#Searching for new primes

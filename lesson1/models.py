@@ -15,3 +15,6 @@ class Company(models.Model):
 
 class PrimeNumber(models.Model):
     value  = models.IntegerField()
+
+class UnorderedPrimeNumber(models.Model):
+    value  = models.IntegerField()
