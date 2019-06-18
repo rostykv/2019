@@ -16,10 +16,10 @@ def new_primes():
     for p in newly_found_primes: yield p
 
 def known_primes():
-    for p in known_primes(): yield p.value
+    for p in PrimeNumber.objects.all(): yield p.value
 
 def db_content_message():
-    t = tuple( p.value for p in  unordered_primes())
+    t = tuple( p for p in  unordered_primes())
     if t:
         part1 = messages[3]
         for p in t: part1 += str(p)+", "
