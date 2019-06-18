@@ -2,8 +2,9 @@ from .models import Company, PrimeNumber, UnorderedPrimeNumber
 import pdb
 
 messages = {
-1: "The database contains prime numbers up to ",
-2: "The database contains no prime numbers so far."
+1: "The database contains consecutive prime numbers up to ",
+2: "The database contains no prime numbers so far.",
+3: "The database also contains the following non-consecutive prime numbers identified by the square root rule: "
                                                     }
 
 newly_found_primes = []
@@ -15,13 +16,29 @@ def new_primes():
     for p in newly_found_primes: yield p
 
 def known_primes():
-    for p in PrimeNumber.objects.all(): yield p.value
+    for p in known_primes(): yield p.value
 
 def db_content_message():
+    t = tuple( p.value for p in  unordered_primes())
+    if t:
+        part1 = messages[3]
+        for p in t: part1 += str(p)+", "
+        part1 = part1[:-2]+"."
+    else: part1 = ""
+
     try:
-        return messages[1] + str(PrimeNumber.objects.last().value)
+        return messages[1] + str(PrimeNumber.objects.last().value) +". "+part1
     except:
         return messages[2]
+
+def new_prime_found(p):
+    try:
+        new_prime = PrimeNumber.objects.get(value = p)
+    except:
+        try:
+            new_prime = UnorderedPrimeNumber.objects.get(value = p)
+        except:
+            newly_found_primes.append(p)
 
 def eratosthenes():
     sieve = [ [n] for n in known_primes()  ]
@@ -37,10 +54,8 @@ def eratosthenes():
         d += 1
         try:
             unordered.remove(d)
-            x = UnorderedPrimeNumber.objects.get(value = d)
-            x.delete()
+            move_from_unordered_to_ordered(d)
             sieve.append([d,d])
-            add_new_prime_to_db(d)
             d += 1
             step = 2
         except:
@@ -54,19 +69,35 @@ def eratosthenes():
                 prime = False
         if prime:
             sieve.append([d,d])
+            new_prime_found(d)
             add_new_prime_to_db(d)
-            newly_found_primes.append(d)
             yield d
 
 def add_new_prime_to_db(p):
-    new_prime = PrimeNumber(value = p)
-    new_prime.save()
+    try:
+        new_prime = PrimeNumber.objects.get(value = p)
+    except:
+        new_prime = PrimeNumber(value = p)
+        new_prime.save()
+
+def move_from_unordered_to_ordered(p):
+    x = UnorderedPrimeNumber.objects.get(value = p)
+    x.delete()
+    add_new_prime_to_db(p)
+    pass;
 
 
 def add_new_unorderd_prime(p):
-    new_prime = UnorderedPrimeNumber(value = p)
-    new_prime.save()
-    newly_found_primes.append(p)
+    try:
+        new_prime = UnorderedPrimeNumber.objects.get(value = p)
+    except:
+        try:
+            new_prime = PrimeNumber.objects.get(value = p)
+        except:
+            new_prime_found(p)
+            new_prime = UnorderedPrimeNumber(value = p)
+            new_prime.save()
+
 
 
 def divide(divisible, divider):
