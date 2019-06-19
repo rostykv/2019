@@ -10,24 +10,23 @@ messages = {
 newly_found_primes = []
 
 def nonconsecutive_primes():
-    for p in UnorderedPrimeNumber.objects.all(): yield p.value
+    return [p.value for p in UnorderedPrimeNumber.objects.all()]
 
 def new_primes():
     for p in newly_found_primes: yield p
 
 def consecutive_primes():
-    for p in PrimeNumber.objects.all(): yield p.value
+    return [p.value for p in PrimeNumber.objects.all()]
 
 def db_content_message():
-    t = tuple( p for p in  nonconsecutive_primes())
-    if t:
-        part1 = messages[3]
-        for p in t: part1 += str(p)+", "
-        part1 = part1[:-2]+"."
-    else: part1 = ""
+    text = ''
+    for p in nonconsecutive_primes():
+        text += str(p)+', '
+    if text:
+        text = messages[3] + text[:-2]+'.'
 
     try:
-        return messages[1] + str(PrimeNumber.objects.last().value) +". "+part1
+        return messages[1] + str(PrimeNumber.objects.last().value) +". "+text
     except:
         return messages[2]
 
@@ -41,8 +40,9 @@ def new_prime_found(p):
             newly_found_primes.append(p)
 
 def eratosthenes():
-    sieve = [ [n] for n in consecutive_primes()  ]
-    nonconsecutive = [ n for n in nonconsecutive_primes()]
+    sieve = [ [n,] for n in consecutive_primes()  ]
+    nonconsecutive = nonconsecutive_primes()
+    import pdb; pdb.set_trace()
 
     try: d = sieve[-1][0] # If the db of prime numbers is empty,
     except: d = 1           # the first prime number will be manually set to 2
@@ -55,7 +55,7 @@ def eratosthenes():
         try:
             nonconsecutive.remove(d)
             move_from_nonconsecutive_to_consecutive(d)
-            sieve.append([d,d])
+            sieve.append([d,d+2])
             d += 1
             step = 2
         except:
