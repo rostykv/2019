@@ -9,6 +9,16 @@ from itertools import chain
 def company_list(request):
     context = {}
     try:
+        if request.POST['cleardatabase'] == "cleardatabase":
+            p = PrimeNumber.objects.all()
+            p.delete()
+            p = UnorderedPrimeNumber.objects.all()
+            p.delete()
+    except:
+        pass;
+
+
+    try:
         argument = int(request.GET['argument'])
         context['argument'] = argument
         context['factorization'] =  full_factorization(argument)

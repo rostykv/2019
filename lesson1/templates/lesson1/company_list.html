@@ -6,6 +6,11 @@
     </head>
     <body>
 
+      <form method = "post">
+        {% csrf_token %}
+        <input type="submit" name = "cleardatabase" value = "cleardatabase">
+      </form>
+
         {{message1}}
         <p></p>
 
@@ -34,7 +39,7 @@
           {%endif%}
         {%endfor%}
       {% else %}
-        <p>No new prime numbers were identified while factorizing your task:</p>
+        <p>No new prime numbers were identified while factoring your task:</p>
       {% endif %}
 
     </body>

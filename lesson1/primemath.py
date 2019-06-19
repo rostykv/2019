@@ -9,17 +9,17 @@ messages = {
 
 newly_found_primes = []
 
-def unordered_primes():
+def nonconsecutive_primes():
     for p in UnorderedPrimeNumber.objects.all(): yield p.value
 
 def new_primes():
     for p in newly_found_primes: yield p
 
-def known_primes():
+def consecutive_primes():
     for p in PrimeNumber.objects.all(): yield p.value
 
 def db_content_message():
-    t = tuple( p for p in  unordered_primes())
+    t = tuple( p for p in  nonconsicutive_primes())
     if t:
         part1 = messages[3]
         for p in t: part1 += str(p)+", "
@@ -41,8 +41,8 @@ def new_prime_found(p):
             newly_found_primes.append(p)
 
 def eratosthenes():
-    sieve = [ [n] for n in known_primes()  ]
-    unordered = [ n for n in unordered_primes()]
+    sieve = [ [n] for n in consecutive_primes()  ]
+    nonconsecutive = [ n for n in nonconsecutive_primes()]
 
     try: d = sieve[-1][0] # If the db of prime numbers is empty,
     except: d = 1           # the first prime number will be manually set to 2
@@ -53,8 +53,8 @@ def eratosthenes():
     while True:
         d += 1
         try:
-            unordered.remove(d)
-            move_from_unordered_to_ordered(d)
+            nonconsecutive.remove(d)
+            move_from_nonconsecutive_to_consecutive(d)
             sieve.append([d,d])
             d += 1
             step = 2
@@ -80,14 +80,14 @@ def add_new_prime_to_db(p):
         new_prime = PrimeNumber(value = p)
         new_prime.save()
 
-def move_from_unordered_to_ordered(p):
+def move_from_nonconsecutive_to_consecutive(p):
     x = UnorderedPrimeNumber.objects.get(value = p)
     x.delete()
     add_new_prime_to_db(p)
     pass;
 
 
-def add_new_unorderd_prime(p):
+def add_new_nonconsecutive_prime(p):
     try:
         new_prime = UnorderedPrimeNumber.objects.get(value = p)
     except:
@@ -109,7 +109,7 @@ def divide(divisible, divider):
     return  (power, remainder)
 
 
-def factorization(x, dividers, ordered = True):
+def factorization(x, dividers, consecutive = True):
     #This generator divides x by each of dividers and
     #yields tuples of (factor, power, remainder)
     remainder = x
@@ -120,8 +120,8 @@ def factorization(x, dividers, ordered = True):
             yield (factor, power, remainder) #Yielding factor and power and remainder
             if remainder == 1: return #This means that we have successfully factorized the input
 
-        if ordered and (factor ** 2 > remainder):
-            add_new_unorderd_prime(remainder)
+        if consecutive and (factor ** 2 > remainder):
+            add_new_nonconsecutive_prime(remainder)
             yield (remainder, 1, 1) #This means that the current remainder is the last prime factor in factorization
             return
     yield (0, 0, remainder) #This means that we have tried all the factors in dividers, but non-prime remainder still remains
@@ -132,12 +132,12 @@ def full_factorization(x):
     #First it divides x by each of the known Primes
     #Then seeks new primes
     newly_found_primes.clear()
-    for factor, power, remainder in factorization(x, known_primes() ):
+    for factor, power, remainder in factorization(x, consecutive_primes() ):
         if factor:
             yield (factor, power)
 
     if remainder > 1: #After dividing x by all the ordered known primes, the remainder is still >1
-        for factor, power, remainder in factorization(remainder, unordered_primes(), ordered = False ):
+        for factor, power, remainder in factorization(remainder, nonconsecutive_primes(), consecutive = False ):
             if factor:
                 yield (factor, power)
 
