@@ -19,7 +19,7 @@ def consecutive_primes():
     for p in PrimeNumber.objects.all(): yield p.value
 
 def db_content_message():
-    t = tuple( p for p in  nonconsicutive_primes())
+    t = tuple( p for p in  nonconsecutive_primes())
     if t:
         part1 = messages[3]
         for p in t: part1 += str(p)+", "
