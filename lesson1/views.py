@@ -1,22 +1,23 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from .models import Company, PrimeNumber
-import pdb
 from .primemath import *
+
 from sys import exc_info
 from itertools import chain
 
 
-def company_list(request):
+
+def home_page(request):
+    return redirect('/factorization/')
+
+def prime_factorization(request):
     context = {}
     try:
-        if request.POST['cleardatabase'] == "cleardatabase":
-            p = PrimeNumber.objects.all()
-            p.delete()
-            p = UnorderedPrimeNumber.objects.all()
-            p.delete()
+        if request.POST['flushDB']:
+            PrimeNumber.objects.all().delete()
+            UnorderedPrimeNumber.objects.all().delete()
     except:
-        pass;
-
+        pass
 
     try:
         argument = int(request.GET['argument'])

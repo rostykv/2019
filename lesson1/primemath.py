@@ -43,6 +43,7 @@ def eratosthenes():
     sieve = [ [n,] for n in consecutive_primes()  ]
     nonconsecutive = nonconsecutive_primes()
 
+
     try: d = sieve[-1][0] # If the db of prime numbers is empty,
     except: d = 1           # the first prime number will be manually set to 2
 
