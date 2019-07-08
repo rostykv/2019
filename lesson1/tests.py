@@ -1,5 +1,19 @@
 from django.test import TestCase
 from .primemath import *
+from .forms import *
+from .models import *
+
+class TestAccounting(TestCase):
+    def test_accounting(self):
+        data = {'company_name': 'Cetadir', 'company_country' : "France"}
+        f = CompanyForm(data)
+        if f.is_valid():
+            m = Company()
+            m.save()
+        import pdb; pdb.set_trace()
+
+        pass;
+
 
 class TestFactorization(TestCase):
 

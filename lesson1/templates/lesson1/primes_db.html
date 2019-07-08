@@ -1,0 +1,11 @@
+{%  extends "lesson1/factorization.html" %}
+
+    
+    {%block content%}
+    <form method = "post">
+      {% csrf_token %}
+      <input type="hidden" name = "flushDB" value = "flushDB">
+      <input type="submit" value = "Flush database of prime numbers">
+    </form>
+      {{message}}
+    {% endblock %}

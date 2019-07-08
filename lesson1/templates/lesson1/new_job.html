@@ -1,0 +1,17 @@
+{%  extends "lesson1/accounting.html" %}
+
+
+{%block  content %}
+
+<p>{{message}}</p>
+
+<form class="" action="" method="post">
+  {%csrf_token%}
+  {{form}}
+  <p></p>
+  <input type="hidden" name="single_job" value="{{single_job}}">
+  <button type="submit" name="action" value="save_form">Save</button>
+</form>
+
+
+{% endblock %}

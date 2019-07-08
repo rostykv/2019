@@ -1,14 +1,112 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import Company, PrimeNumber
+from .models import Company, PrimeNumber, Job, Invoice
 from .primemath import *
+from .forms import CompanyForm, JobForm, InvoiceForm
+from django import forms
+from django.views import View
+from django.core.exceptions import ValidationError
 
-from sys import exc_info
-from itertools import chain
 
+def new_job(request):
+    context = {}
+    #import pdb; pdb.set_trace()
+    if request.POST:
 
+        if request.POST['action'] == 'delete':
+            Job.objects.get(pk = request.POST['single_job']).delete()
+            return redirect('accounting/jobs')
+
+        elif request.POST['action'] == 'open_editing_form':
+            f = JobForm(instance = Job.objects.get(pk = request.POST['single_job']))
+            message = 'Please edit data'
+            context['single_job'] = request.POST['single_job']
+
+        elif request.POST['action'] == 'save_form':
+            try:
+                f = JobForm(request.POST, instance = Job.objects.get(pk=request.POST['single_job']))
+                context['single_job'] = request.POST['single_job']
+            except ValueError:
+                import pdb; pdb.set_trace()
+                f = JobForm(request.POST)
+            try:
+                f.save()
+                f = JobForm()
+                message = "Entry saved. Please enter another"
+            except ValidationError:
+                message = "Entry not saved. Please amend."
+
+    else:
+        f = JobForm()
+        message = "Please enter data."
+    context.update({'form': f, 'message': message})
+    return render(request, 'lesson1/new_job.html', context)
+
+def new_company(request):
+    context = {}
+    if request.POST:
+
+        if request.POST['action'] == 'delete':
+            Company.objects.get(pk = request.POST['pk']).delete()
+            return redirect('/accounting/companies')
+
+        elif request.POST['action'] == 'open_editing_form':
+            f = CompanyForm(instance = Company.objects.get(pk = request.POST['pk']))
+            message = "Please edit data."
+            context['pk'] = request.POST['pk']
+
+        elif request.POST['action'] == 'save_form':
+            try:
+                f = CompanyForm(request.POST, instance = Company.objects.get(pk = request.POST['pk']))
+            except:
+                f = CompanyForm(request.POST)
+            if f.is_valid():
+                f.save()
+                f = CompanyForm()
+                message = "Entry saved. You may enter another one."
+            else:
+                message = "Entry not saved. Please amend"
+
+    else:
+        message = "Please enter new data."
+        f = CompanyForm()
+
+    context.update({'form': f, 'message': message})
+    return render(request, "lesson1/new_company.html", context)
+
+def view_companies(request):
+
+    context = {"companies":  Company.objects.all()   }
+    return  render(request, "lesson1/view_companies.html", context)
+
+def new_invoice(request):
+
+    invoice_form = InvoiceForm(request.POST)
+    criterion = request.POST.getlist('jobs_to_invoice')
+
+    if invoice_form.is_valid():
+        invoice_form.save()
+        Job.objects.filter(id__in=criterion).update(job_invoice = invoice_form.instance.pk)
+        invoice_form = InvoiceForm()
+
+    jobs = Job.objects.all().order_by('job_company', 'job_invoice', '-job_startdate')
+    context = {'jobs': jobs, 'invoice_form': invoice_form }
+
+    return render(request, 'lesson1/view_jobs.html', context)
+
+def view_jobs(request):
+
+    invoice_form = InvoiceForm()
+    jobs = Job.objects.all().order_by('job_company', 'job_invoice', '-job_startdate')
+
+    context = {'jobs': jobs, 'invoice_form': invoice_form }
+    return  render(request, "lesson1/view_jobs.html", context)
 
 def home_page(request):
     return redirect('/factorization/')
+
+def view_primes_db(request):
+    context = {'message': db_content_message()}
+    return render(request, "lesson1/primes_db.html", context)
 
 def prime_factorization(request):
     context = {}
@@ -28,4 +126,16 @@ def prime_factorization(request):
     except:
         context['message1'] = db_content_message()
 
-    return render(request, 'lesson1/company_list.html', context)
+    return render(request, 'lesson1/factorize.html', context)
+
+def accounting(request):
+
+    try:
+        f1 = CompanyForm(request.POST)
+        f1.save()
+    except:
+        f1 = CompanyForm()
+
+    context = {'form1': f1}
+
+    return render(request, 'lesson1/accounting.html', context)

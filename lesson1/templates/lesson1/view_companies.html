@@ -1,0 +1,17 @@
+{%  extends "lesson1/accounting.html" %}
+
+
+{%block  content %}
+
+{% for company in companies %}
+<form class="" action="/accounting/newcompany/" method="post">
+  {% csrf_token %}
+  <p>{{company.company_name}}
+    <input type="hidden" name="pk" value="{{company.id}}">
+    <button type="submit" name="action" value="open_editing_form">Edit</button>
+    <button type="submit" name="action" value="delete">Delete</button>
+    </p>
+</form>
+{%endfor%}
+
+{% endblock %}

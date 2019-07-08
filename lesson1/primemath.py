@@ -2,7 +2,7 @@ from .models import Company, PrimeNumber, UnorderedPrimeNumber
 import pdb
 
 messages = {
-1: "The database contains consecutive prime numbers up to ",
+1: "The database contains {0} consecutive prime numbers up to {1}.",
 2: "The database contains no prime numbers so far.",
 3: "The database also contains the following non-consecutive prime numbers identified by the square root rule: "
                                                     }
@@ -26,7 +26,7 @@ def db_content_message():
         text = messages[3] + text[:-2]+'.'
 
     try:
-        return messages[1] + str(PrimeNumber.objects.last().value) +". "+text
+        return messages[1].format(PrimeNumber.objects.count(), PrimeNumber.objects.last().value) +text
     except:
         return messages[2]
 

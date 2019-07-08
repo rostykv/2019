@@ -1,0 +1,45 @@
+{%  extends "lesson1/accounting.html" %}
+
+
+{%block  content %}
+
+
+{% for job in jobs %}
+
+{% ifchanged job.job_company%}
+
+  <h1>{{job.job_company}}</h1>
+
+
+{%endifchanged%}
+
+{% ifchanged job.job_invoice%}
+  {%if job.job_invoice%}<h2>Invoice {{job.job_invoice}}</h2>
+  {%else%}
+  <form class="" action="/accounting/newinvoice/" method="post" id="invoice_form{{job.job_company.id}}">
+    {% csrf_token %}
+    {{invoice_form}}
+    <button form="invoice_form{{job.job_company.id}}" type="submit" name="action" value="multiple_job_invoice">Create invoice</button>
+  </form>
+  {%endif%}
+{%endifchanged%}
+<form class="" action="/accounting/newjob/" method="post" id="job_form{{job.id}}">
+  {% csrf_token %}
+  <p>
+    {{job}}
+    <input form="job_form{{job.id}}" type="hidden" name="single_job" value="{{job.id}}">
+    <button form="job_form{{job.id}}" type="submit" name="action" value="open_editing_form">Edit</button>
+    <button form="job_form{{job.id}}" type="submit" name="action" value="delete">Delete</button>
+    {% if not job.job_invoice%}
+    <input form="invoice_form{{job.job_company.id}}" type="checkbox" name="jobs_to_invoice" value="{{job.id}}">
+     {%endif%}
+    </p>
+  </form>
+
+
+{%endfor%}
+
+
+
+
+{% endblock %}

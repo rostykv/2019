@@ -1,0 +1,21 @@
+{%  extends "lesson1/factorization.html" %}
+
+    {% block content%}
+
+    <form>
+      <label for = "argument">
+        <input id = "argument" type="number" name="argument">
+        <input type="submit">
+      </form>
+
+      {%for factor, power in factorization%}
+      {%if forloop.first%}
+      {{argument}}=
+      {%endif%}
+      {{factor}}<sup>{{power}}</sup>
+      {%if not forloop.last%}
+      x
+      {%endif%}
+      {%endfor%}
+
+    {% endblock %}
