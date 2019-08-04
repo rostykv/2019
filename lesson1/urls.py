@@ -5,7 +5,8 @@ from . import views
 factorization_patterns = [
 path('' , views.prime_factorization),
 path('factorize/', views.prime_factorization),
-path('view/', views.view_primes_db)
+path('view/', views.view_primes_db),
+path('pdf/',views.pdf)
 ]
 accounting_patterns = [
 path('', views.accounting),

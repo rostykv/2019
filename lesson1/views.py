@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
+from django.http import FileResponse
 from .models import Company, PrimeNumber, Job, Invoice
 from .primemath import *
 from .forms import CompanyForm, JobForm, InvoiceForm
@@ -105,17 +106,52 @@ def home_page(request):
     return redirect('/factorization/')
 
 def view_primes_db(request):
+
+    if request.method == 'POST':
+        if 'flushDB' in request.POST:
+            PrimeNumber.objects.all().delete()
+            UnorderedPrimeNumber.objects.all().delete()
+
+        if 'downloadDB' in request.POST:
+            import csv;
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="prime_numbers_list.csv"'
+            writer = csv.writer(response)
+
+            for v in consecutive_primes():
+                writer.writerow([v])
+            return response
+
+
     context = {'message': db_content_message()}
     return render(request, "lesson1/primes_db.html", context)
 
+def pdf(request):
+    import io
+    from reportlab.pdfgen import canvas
+    import pdb; pdb.set_trace()
+
+    p = canvas.Canvas('invoice.pdf')
+    p.drawString(100, 100, "Hello world.")
+    p.showPage()
+    p.save()
+
+    return FileResponse(open('invoice.pdf', 'rb'), as_attachment=True )
+    
 def prime_factorization(request):
     context = {}
-    try:
-        if request.POST['flushDB']:
+
+    if request.method == 'POST':
+        if 'flushDB' in request.POST:
             PrimeNumber.objects.all().delete()
             UnorderedPrimeNumber.objects.all().delete()
-    except:
-        pass
+        if 'downloadDB' in request.POST:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+            writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+            return response
 
     try:
         argument = int(request.GET['argument'])

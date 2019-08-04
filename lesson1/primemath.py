@@ -144,3 +144,8 @@ def full_factorization(x):
     if remainder > 1: #After dividing x by all the unordered known primes, the remainder is still >1
         for factor, power, remainder in factorization(remainder, eratosthenes()):
             yield (factor, power)#Searching for new primes
+
+
+def primes_csv():
+    import csv
+    response
