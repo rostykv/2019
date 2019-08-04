@@ -129,15 +129,14 @@ def view_primes_db(request):
 def pdf(request):
     import io
     from reportlab.pdfgen import canvas
-    import pdb; pdb.set_trace()
 
     p = canvas.Canvas('invoice.pdf')
     p.drawString(100, 100, "Hello world.")
     p.showPage()
     p.save()
 
-    return FileResponse(open('invoice.pdf', 'rb'), as_attachment=True )
-    
+    return FileResponse( open('invoice.pdf', 'rb'), as_attachment=True )
+
 def prime_factorization(request):
     context = {}
 
